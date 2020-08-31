@@ -45,13 +45,16 @@ constructor(
         }.flowOn(dispatcher)
     }
 
-    override fun getCachedVenues(bounds: LatLngBounds) =
-        VenueResult.Success(venues.filter { venue ->
-            bounds.contains(
-                LatLng(
-                    venue.location.lat,
-                    venue.location.lng
+    override fun getCachedVenues(bounds: LatLngBounds): Flow<VenueResult<List<Venue>>> {
+        return flow {
+            emit(VenueResult.Success(venues.filter { venue ->
+                bounds.contains(
+                    LatLng(
+                        venue.location.lat,
+                        venue.location.lng
+                    )
                 )
-            )
-        })
+            }))
+        }.flowOn(dispatcher)
+    }
 }

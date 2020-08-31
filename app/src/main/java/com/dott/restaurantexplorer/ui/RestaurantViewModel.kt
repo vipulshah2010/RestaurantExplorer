@@ -1,7 +1,7 @@
 package com.dott.restaurantexplorer.ui
 
-import android.content.Context
 import android.location.Location
+import androidx.annotation.VisibleForTesting
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -17,7 +17,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.VisibleRegion
 import com.squareup.moshi.Moshi
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
@@ -32,11 +31,9 @@ import kotlin.math.sqrt
 
 @ExperimentalCoroutinesApi
 class RestaurantViewModel @ViewModelInject constructor(
-    @ApplicationContext context: Context,
+    val locationData: LocationLiveData,
     private val repository: RestaurantRepository
 ) : ViewModel() {
-
-    public val locationData = LocationLiveData(context)
 
     private var _venuesLiveData = MutableLiveData<VenueResult<List<Venue>>>()
     private var _selectedVenueLiveData = MutableLiveData<Venue>()
@@ -65,7 +62,9 @@ class RestaurantViewModel @ViewModelInject constructor(
             viewModelScope.launch {
                 repository.getVenues(location, radius, bounds)
                     .onStart {
-                        _venuesLiveData.value = repository.getCachedVenues(bounds)
+                        repository.getCachedVenues(bounds).collect {
+                            _venuesLiveData.value = it
+                        }
                     }.catch {
                         _venuesLiveData.value = parseError(it)
                     }.collect {
@@ -81,7 +80,8 @@ class RestaurantViewModel @ViewModelInject constructor(
      * if errorCode is 400, then parse error response and return deserialized error message returned by server.
      * if errorCode is not 400, display local error message based on throwable type.
      */
-    private fun parseError(throwable: Throwable): VenueResult.Error {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun parseError(throwable: Throwable): VenueResult.Error {
         if (throwable is HttpException && throwable.code() == HttpURLConnection.HTTP_BAD_REQUEST) {
             throwable.response()?.errorBody()?.let { body ->
                 val response =
