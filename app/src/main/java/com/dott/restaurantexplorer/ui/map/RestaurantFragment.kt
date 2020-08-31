@@ -10,9 +10,11 @@ import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.dott.restaurantexplorer.PermissionCallback
 import com.dott.restaurantexplorer.PermissionObserver
 import com.dott.restaurantexplorer.R
+import com.dott.restaurantexplorer.api.model.Venue
 import com.dott.restaurantexplorer.api.model.VenueResult
 import com.dott.restaurantexplorer.databinding.FragmentRestaurantBinding
 import com.dott.restaurantexplorer.ui.RestaurantViewModel
@@ -21,7 +23,11 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.material.snackbar.Snackbar
+import com.google.maps.android.clustering.Cluster
+import com.google.maps.android.clustering.ClusterManager
+import com.google.maps.android.clustering.ClusterManager.OnClusterClickListener
 import com.google.maps.android.ktx.CameraIdleEvent
 import com.google.maps.android.ktx.awaitMap
 import com.google.maps.android.ktx.cameraEvents
@@ -33,13 +39,16 @@ import kotlinx.coroutines.flow.collect
 // Handling runtime permission, so skipping this lint warning.
 @SuppressLint("MissingPermission")
 @AndroidEntryPoint
-class RestaurantFragment : BaseFragment<FragmentRestaurantBinding>(), PermissionCallback {
+class RestaurantFragment : BaseFragment<FragmentRestaurantBinding>(), PermissionCallback,
+    OnClusterClickListener<Venue>, ClusterManager.OnClusterItemClickListener<Venue> {
 
     private lateinit var permissionObserver: PermissionObserver
     private var googleMap: GoogleMap? = null
     private lateinit var map: SupportMapFragment
 
     private val viewModel: RestaurantViewModel by activityViewModels()
+
+    private lateinit var clusterManager: ClusterManager<Venue>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -70,13 +79,16 @@ class RestaurantFragment : BaseFragment<FragmentRestaurantBinding>(), Permission
                 }
                 is VenueResult.Success -> {
                     binding.progressBar.visibility = View.GONE
-                    // Display restaurants
+                    if (::clusterManager.isInitialized) {
+                        clusterManager.addItems(it.data)
+                        clusterManager.cluster()
+                    }
                 }
             }
         })
 
         viewModel.selectedVenueLiveData.observe(requireActivity(), {
-            // display details
+            findNavController().navigate(RestaurantFragmentDirections.actionVenueToVenueDetails(it))
         })
 
         viewLifecycleOwner.lifecycleScope.launchWhenCreated {
@@ -84,7 +96,7 @@ class RestaurantFragment : BaseFragment<FragmentRestaurantBinding>(), Permission
 
             googleMap?.let {
                 binding.fab.isVisible = true
-                it.uiSettings.isZoomControlsEnabled = true
+                setupClusterManager(it)
                 permissionObserver.requestPermission()
 
                 it.cameraEvents().collect { event ->
@@ -93,7 +105,11 @@ class RestaurantFragment : BaseFragment<FragmentRestaurantBinding>(), Permission
                         is CameraIdleEvent -> {
                             it.cameraPosition?.target?.let { target ->
                                 it.projection?.visibleRegion?.latLngBounds?.let { bounds ->
-                                    viewModel.getVenues(target, 0.0, bounds)
+                                    viewModel.getVenues(
+                                        target,
+                                        viewModel.getMapVisibleRadius(it.projection),
+                                        bounds
+                                    )
                                 }
                             }
                         }
@@ -105,6 +121,21 @@ class RestaurantFragment : BaseFragment<FragmentRestaurantBinding>(), Permission
         binding.fab.setOnClickListener {
             permissionObserver.requestPermission()
         }
+    }
+
+    /*
+    * A function that sets up the cluster manager to be used with the map
+    * */
+    private fun setupClusterManager(googleMap: GoogleMap) {
+        //Initializing the cluster manager
+        clusterManager = ClusterManager(requireActivity(), googleMap)
+        clusterManager.setAnimation(true)
+
+        clusterManager.setOnClusterClickListener(this)
+        clusterManager.setOnClusterItemClickListener(this)
+
+        //Setting the custom renderer to change the marker and cluster views
+        clusterManager.renderer = RestaurantRenderer(requireContext(), googleMap, clusterManager)
     }
 
     override fun getBinding(
@@ -145,5 +176,32 @@ class RestaurantFragment : BaseFragment<FragmentRestaurantBinding>(), Permission
     private fun showMessage(@StringRes resId: Int) {
         Snackbar.make(binding.root, resId, Snackbar.LENGTH_LONG)
             .setAnchorView(binding.fab).show()
+    }
+
+    override fun onClusterClick(cluster: Cluster<Venue>?): Boolean {
+        cluster?.let {
+            val builder = LatLngBounds.builder()
+            for (item in it.items) {
+                builder.include(item.position)
+            }
+            val bounds = builder.build()
+
+            googleMap?.run {
+                animateCamera(
+                    CameraUpdateFactory.newLatLngBounds(bounds, 100)
+                )
+                return true
+            }
+        }
+
+        return false
+    }
+
+    override fun onClusterItemClick(item: Venue?): Boolean {
+        item?.let {
+            viewModel.onSelectVenue(item)
+            return true
+        }
+        return false
     }
 }

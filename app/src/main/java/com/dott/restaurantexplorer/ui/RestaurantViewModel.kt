@@ -1,6 +1,7 @@
 package com.dott.restaurantexplorer.ui
 
 import android.content.Context
+import android.location.Location
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,8 +12,10 @@ import com.dott.restaurantexplorer.api.model.ResponseWrapper
 import com.dott.restaurantexplorer.api.model.Venue
 import com.dott.restaurantexplorer.api.model.VenueResult
 import com.dott.restaurantexplorer.repository.RestaurantRepository
+import com.google.android.gms.maps.Projection
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.VisibleRegion
 import com.squareup.moshi.Moshi
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,6 +27,8 @@ import retrofit2.HttpException
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.SocketTimeoutException
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 @ExperimentalCoroutinesApi
 class RestaurantViewModel @ViewModelInject constructor(
@@ -93,5 +98,42 @@ class RestaurantViewModel @ViewModelInject constructor(
             is IOException -> VenueResult.Error(R.string.error_offline)
             else -> VenueResult.Error(R.string.error_generic)
         }
+    }
+
+    fun onSelectVenue(venue: Venue) {
+        _selectedVenueLiveData.value = venue
+    }
+
+    fun getMapVisibleRadius(projection: Projection): Double {
+        val visibleRegion: VisibleRegion = projection.visibleRegion
+
+        val distanceWidth = FloatArray(1)
+        val distanceHeight = FloatArray(1)
+
+        val farRight = visibleRegion.farRight
+        val farLeft = visibleRegion.farLeft
+        val nearRight = visibleRegion.nearRight
+        val nearLeft = visibleRegion.nearLeft
+
+        Location.distanceBetween(
+            (farLeft.latitude + nearLeft.latitude) / 2,
+            farLeft.longitude,
+            (farRight.latitude + nearRight.latitude) / 2,
+            farRight.longitude,
+            distanceWidth
+        )
+
+        Location.distanceBetween(
+            farRight.latitude,
+            (farRight.longitude + farLeft.longitude) / 2,
+            nearRight.latitude,
+            (nearRight.longitude + nearLeft.longitude) / 2,
+            distanceHeight
+        )
+
+        return sqrt(
+            distanceWidth[0].toDouble().pow(2.0) +
+                    distanceHeight[0].toDouble().pow(2.0)
+        ) / 2
     }
 }

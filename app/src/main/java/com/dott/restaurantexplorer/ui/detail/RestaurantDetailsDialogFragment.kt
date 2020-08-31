@@ -4,6 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.navArgs
+import coil.api.load
+import coil.transform.CircleCropTransformation
+import com.dott.restaurantexplorer.R
 import com.dott.restaurantexplorer.databinding.FragmentRestaurantDetailsDialogBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
@@ -11,6 +15,8 @@ class RestaurantDetailsDialogFragment : BottomSheetDialogFragment() {
 
     private var _binding: FragmentRestaurantDetailsDialogBinding? = null
     private val binding get() = _binding!!
+
+    private val args: RestaurantDetailsDialogFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -23,5 +29,18 @@ class RestaurantDetailsDialogFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        with(args.venue) {
+            binding.titleText.text = title
+            binding.subtitleText.text = location.formattedAddress.joinToString("\n")
+
+            with(categories[0]) {
+                binding.imageView.load(icon.prefix + "100" + icon.suffix) {
+                    crossfade(true)
+                    placeholder(R.drawable.ic_svg_placeholder)
+                    transformations(CircleCropTransformation())
+                }
+            }
+        }
     }
 }

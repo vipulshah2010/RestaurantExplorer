@@ -3,12 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/RestaurantFragment">
+    app:startDestination="@id/restaurantFragment">
 
     <fragment
-        android:id="@+id/RestaurantFragment"
+        android:id="@+id/restaurantFragment"
         android:name="com.dott.restaurantexplorer.ui.map.RestaurantFragment"
-        android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_restaurant"></fragment>
+        android:label="RestaurantFragment"
+        tools:layout="@layout/fragment_restaurant">
+        <action
+            android:id="@+id/action_venue_to_venueDetails"
+            app:destination="@id/restaurantDetailsDialogFragment" />
+    </fragment>
 
+    <dialog
+        android:id="@+id/restaurantDetailsDialogFragment"
+        android:name="com.dott.restaurantexplorer.ui.detail.RestaurantDetailsDialogFragment"
+        android:label="fragment_venue_details_dialog_list_dialog"
+        tools:layout="@layout/fragment_restaurant_details_dialog">
+        <argument
+            android:name="venue"
+            app:argType="com.dott.restaurantexplorer.api.model.Venue" />
+    </dialog>
 </navigation>
