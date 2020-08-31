@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
+    app:startDestination="@id/RestaurantFragment">
 
     <fragment
-        android:id="@+id/FirstFragment"
-        android:name="com.dott.restaurantexplorer.ui.FirstFragment"
+        android:id="@+id/RestaurantFragment"
+        android:name="com.dott.restaurantexplorer.ui.map.RestaurantFragment"
         android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_first"></fragment>
+        tools:layout="@layout/fragment_restaurant"></fragment>
 
 </navigation>
