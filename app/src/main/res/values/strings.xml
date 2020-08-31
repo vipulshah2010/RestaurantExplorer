@@ -10,6 +10,10 @@
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 
+    <string name="location_error">Couldn\'t fetch last known location! Turn on location &amp; Try reconnecting to wifi/data</string>
+    <string name="enable_location">Please grant us location permission to show nearby places</string>
+    <string name="enable_location_settings">Please enable permissions through settings! and click fab again</string>
+
     <string name="error_network_timeout">Network Timeout, Please try again</string>
     <string name="error_offline">Please check your network connection and try again</string>
     <string name="error_generic">Something went wrong! Try Again</string>
