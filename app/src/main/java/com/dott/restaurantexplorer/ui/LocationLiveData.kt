@@ -10,6 +10,11 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 
+/**
+ * Lifecycle aware Location class, which auto registers & deregisters location callback.
+ *
+ * Results won't be delivered if calling module, is not active.
+ */
 @SuppressLint("MissingPermission")
 class LocationLiveData(context: Context) : LiveData<Location?>() {
 
