@@ -5,7 +5,16 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.HashMap
 
+/**
+ * Base class
+ */
 abstract class QueryBuilder {
+
+    private val CATEGORY_ID = "4d4b7105d754a06374d81259"
+    private val DATE = dateFormat.format(Date())
+    private val LIMIT = "50"
+    private val INTENT = "browse"
+
     private val baseQueryParams by lazy {
         mapOf(
             "client_id" to BuildConfig.CLIENT_ID,
@@ -15,10 +24,10 @@ abstract class QueryBuilder {
 
     fun build(): Map<String, String> {
         val queryParams = HashMap(baseQueryParams)
-        queryParams["categoryId"] = "4d4b7105d754a06374d81259"
-        queryParams["v"] = dateFormat.format(Date())
-        queryParams["limit"] = "50"
-        queryParams["intent"] = "browse"
+        queryParams["categoryId"] = CATEGORY_ID
+        queryParams["v"] = DATE
+        queryParams["limit"] = LIMIT
+        queryParams["intent"] = INTENT
         putQueryParams(queryParams)
         return queryParams
     }

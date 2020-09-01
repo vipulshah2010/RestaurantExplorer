@@ -9,8 +9,14 @@ import coil.api.load
 import coil.transform.CircleCropTransformation
 import com.dott.restaurantexplorer.R
 import com.dott.restaurantexplorer.databinding.FragmentRestaurantDetailsDialogBinding
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
+/**
+ * Simple Dialog displayed basic details of selected restaurant
+ */
 class RestaurantDetailsDialogFragment : BottomSheetDialogFragment() {
 
     private var _binding: FragmentRestaurantDetailsDialogBinding? = null
@@ -29,6 +35,9 @@ class RestaurantDetailsDialogFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val modalBottomSheetBehavior = (dialog as BottomSheetDialog).behavior
+        modalBottomSheetBehavior.state = STATE_EXPANDED
 
         with(args.venue) {
             binding.titleText.text = title

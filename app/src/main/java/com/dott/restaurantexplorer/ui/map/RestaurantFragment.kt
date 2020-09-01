@@ -66,19 +66,10 @@ class RestaurantFragment : BaseFragment<FragmentRestaurantBinding>(), Permission
 
         viewModel.venuesLiveData.observe(requireActivity(), {
             when (it) {
-                VenueResult.Loading -> {
-                    binding.progressBar.visibility = View.VISIBLE
-                }
                 is VenueResult.Error -> {
-                    binding.progressBar.visibility = View.GONE
-                    Snackbar.make(
-                        binding.root,
-                        it.message ?: requireContext().getString(it.code),
-                        Snackbar.LENGTH_LONG
-                    ).setAnchorView(binding.fab).show()
+                    showMessage(it.message ?: requireContext().getString(it.code))
                 }
                 is VenueResult.Success -> {
-                    binding.progressBar.visibility = View.GONE
                     if (::clusterManager.isInitialized) {
                         clusterManager.addItems(it.data)
                         clusterManager.cluster()
@@ -88,7 +79,16 @@ class RestaurantFragment : BaseFragment<FragmentRestaurantBinding>(), Permission
         })
 
         viewModel.selectedVenueLiveData.observe(requireActivity(), {
-            findNavController().navigate(RestaurantFragmentDirections.actionVenueToVenueDetails(it))
+            /**
+             * If fragment state is restored, LiveData value will be re-emitted,
+             * re-performing navigation would crash app with illegalState, so first dismiss any outstanding bottomSheet Fragment
+             */
+            if (findNavController().currentDestination?.id == R.id.restaurantDetailsDialogFragment) {
+                findNavController().popBackStack()
+            }
+            findNavController().navigate(
+                RestaurantFragmentDirections.actionVenueToVenueDetails(it)
+            )
         })
 
         viewLifecycleOwner.lifecycleScope.launchWhenCreated {
@@ -173,9 +173,14 @@ class RestaurantFragment : BaseFragment<FragmentRestaurantBinding>(), Permission
         showMessage(R.string.enable_location_settings)
     }
 
-    private fun showMessage(@StringRes resId: Int) {
-        Snackbar.make(binding.root, resId, Snackbar.LENGTH_LONG)
+    private fun showMessage(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_INDEFINITE)
+            .setAction(android.R.string.ok, {})
             .setAnchorView(binding.fab).show()
+    }
+
+    private fun showMessage(@StringRes resId: Int) {
+        showMessage(requireContext().getString(resId))
     }
 
     override fun onClusterClick(cluster: Cluster<Venue>?): Boolean {

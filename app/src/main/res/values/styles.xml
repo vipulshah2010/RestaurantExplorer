@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Base application theme. -->
     <style name="Theme.MyApp" parent="Theme.MaterialComponents.Light.NoActionBar">
 
@@ -30,7 +30,7 @@
 
         <!--System/Platform attributes-->
         <item name="android:windowBackground">?android:colorBackground</item>
-        <item name="android:windowLightStatusBar" tools:ignore="NewApi">true</item>
+        <item name="android:windowFullscreen">true</item>
     </style>
 
     <color name="background">#FAFAFA</color>

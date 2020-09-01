@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name">RestaurantExplorer</string>
+    <string name="app_name">Restaurants</string>
 
     <string name="location_error">Couldn\'t fetch last known location! Turn on location &amp; Try reconnecting to wifi/data</string>
-    <string name="enable_location">Please grant us location permission to show nearby places</string>
-    <string name="enable_location_settings">Please enable permissions through settings! and click fab again</string>
+    <string name="enable_location">Location permission is needed to show nearby restaurants. Allow and press location icon again.</string>
+    <string name="enable_location_settings">Please enable permissions through settings! and press location icon again</string>
 
     <string name="error_network_timeout">Network Timeout, Please try again</string>
     <string name="error_offline">Please check your network connection and try again</string>

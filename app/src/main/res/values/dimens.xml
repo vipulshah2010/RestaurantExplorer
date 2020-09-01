@@ -1,3 +1,6 @@
 <resources>
-    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="spacing_8">8dp</dimen>
+    <dimen name="spacing_16">16dp</dimen>
+    <dimen name="cover_image_height">180dp</dimen>
+    <dimen name="logo_image_size">75dp</dimen>
 </resources>
