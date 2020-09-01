@@ -5,6 +5,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: "de.mannodermaus.android-junit5"
 apply plugin: "androidx.navigation.safeargs.kotlin"
+apply from: "$project.rootDir/jacoco.gradle"
 
 android {
     compileSdkVersion 30

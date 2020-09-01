@@ -21,6 +21,16 @@
     - [JUnit5](https://github.com/mannodermaus/android-junit5)
     - [kotlinx-coroutines-test](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-test/)
     
+## Code Coverage and Reporting
+  - This project uses Jacoco configuration to measure code coverage and currently the most widely used.
+  - SonarQube is used for inspecting the Code Quality and Security codebase. 
+  - SonarQube consumes Jacoco test coverage report and displays it on [sonarcloud](https://sonarcloud.io/dashboard?id=vipulshah2010_RestaurantExplorer)
+    
+    **Run following command from root folder to generate JaCoco reports and view test coverage on** [sonarcloud](https://sonarcloud.io/dashboard?id=vipulshah2010_RestaurantExplorer)
+     ```
+    ./gradlew clean sonarqube
+    ```
+   
 ## Please note.
 for assignment purpose secure.properties is committed to repo, so reviewers don't need to set it up, 
 In real time projects, this file will be added to .gitignore. Every developer will have his own set of credentials locally stored in secure.properties file.

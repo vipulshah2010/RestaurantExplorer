@@ -1,0 +1,17 @@
+apply plugin: "org.sonarqube"
+
+sonarqube {
+    properties {
+        property("sonar.projectKey", "vipulshah2010_RestaurantExplorer")
+        property("sonar.organization", "vipulshah2010")
+        property("sonar.sources", "src/main/java")
+        property("sonar.java.coveragePlugin", "jacoco")
+        property("sonar.host.url", "https://sonarcloud.io/")
+        property("sonar.coverage.exclusions", "**/test/**,**/androidTest/**,**/R.class,**/BuildConfig.*,**/Manifest*.*,**/*Test*.*,**/com/example/databinding/*,**/com/example/generated/callback/*,**/*Dto*.*,**/android/databinding/*,**/androidx/databinding/*,**/di/module/*,**/*MapperImpl*.*,**/BuildConfig.*,**/*Component*.*,**/*BR*.*,**/Manifest*.*,**/*Companion*.*,**/*Module.*,**/*Dagger*.*,**/*MembersInjector*.*,**/*Extensions*.*,**/InputMethodManagerLeaks.*,**/*_Factory*.*,**/*_Provide*Factory*.*")
+        property("sonar.login", "963a2a94a06dac4393e4e9363b03493a44218dee")
+        property("sonar.sourceEncoding", "UTF-8")
+    }
+}
+
+// task named `testDebugUnitTestCoverage` is created inside `jacoco.gradle`
+tasks.sonarqube.dependsOn ":app:testDebugUnitTestCoverage"
