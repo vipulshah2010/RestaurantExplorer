@@ -20,6 +20,9 @@
     - [MockK](https://mockk.io/) - Unit testing
     - [JUnit5](https://github.com/mannodermaus/android-junit5)
     - [kotlinx-coroutines-test](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-test/)
+    
+## APK file for installation
+[Click here](/art/restaurant.apk) to download apk.
 
 ## Demo
 <img src="/art/recording.gif" height="569" width="256">
