@@ -21,12 +21,15 @@
     - [JUnit5](https://github.com/mannodermaus/android-junit5)
     - [kotlinx-coroutines-test](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-test/)
     
+## Please note.
+for assignment purpose secure.properties is committed to repo, so reviewers don't need to set it up, 
+In real time projects, this file will be added to .gitignore. Every developer will have his own set of credentials locally stored in secure.properties file.
+    
 ## APK file for installation
-[Click here](/art/restaurant.apk) to download apk.
+[Click here](https://github.com/vipulshah2010/RestaurantExplorer/blob/master/art/restaurant.apk) to download apk.
 
 ## Demo
 <img src="/art/recording.gif" height="569" width="256">
 
 ## Missing Implementation.
 - Didn't cover instrumentation test cases. 
-- Haven't made use of SavedStateHandle provided by ViewModel.
